@@ -64,4 +64,24 @@ describe("requestTestXLM", () => {
     expect(result.success).toBe(false);
     expect(result.message).toContain("Network error");
   });
+
+  it("refuses request when network is not TESTNET", async () => {
+    const result = await requestTestXLM(VALID_G_ADDRESS, "PUBLIC");
+    expect(result.success).toBe(false);
+    expect(result.message).toContain("only available on TESTNET");
+  });
+
+  it("proceeds when network is explicitly TESTNET", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ hash: "abc123def456789" }),
+      } as Response)
+    );
+
+    const result = await requestTestXLM(VALID_G_ADDRESS, "TESTNET");
+    expect(result.success).toBe(true);
+    expect(result.message).toContain("Test XLM sent!");
+  });
 });
