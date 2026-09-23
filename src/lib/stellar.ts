@@ -945,7 +945,16 @@ export interface FaucetRequest {
  * - The control is only intended for testnet; callers must gate on
  *   `network === "TESTNET"` before invoking.
  */
-export async function requestTestXLM(address: string): Promise<FaucetRequest> {
+export async function requestTestXLM(
+  address: string,
+  network: StellarNetwork = "TESTNET"
+): Promise<FaucetRequest> {
+  if (network !== "TESTNET") {
+    return {
+      success: false,
+      message: "Friendbot is only available on TESTNET.",
+    };
+  }
   if (!StrKey.isValidEd25519PublicKey(address)) {
     return { success: false, message: "Invalid Stellar address." };
   }
